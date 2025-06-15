@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Your Order</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Confirm Your Order</h1>
+    </header>
+    <main>
+        <!-- Order Summary -->
+        <section>
+            <h2>Order Summary</h2>
+            <ul>
+                {% for seat in reserved_seats %}
+                <li>
+                    <strong>{{ seat.segment }}:</strong> Seat {{ seat.seat }} ({{ seat.price }})
+                </li>
+                {% endfor %}
+            </ul>
+            <p><strong>Total Amount: ₩{{ total_price }}</strong></p>
+        </section>
+
+        <!-- User Information Form -->
+        <form action="{{ url_for('payment', event_id=event.id) }}" method="post">
+            <h2>Your Details</h2>
+            <label for="buyer-name">Name:</label>
+            <input type="text" id="buyer-name" name="buyer_name" required>
+            
+            <label for="buyer-email">Email:</label>
+            <input type="email" id="buyer-email" name="buyer_email" required>
+            
+            <label for="buyer-contact">Contact Number:</label>
+            <input type="tel" id="buyer-contact" name="buyer_contact" required>
+            
+            <!-- Pass Selected Seats -->
+            <input type="hidden" name="seats" value="{{ request.args.get('seats') }}">
+
+            <!-- Submit Button -->
+            <button type="submit">Make Payment</button>
+        </form>
+
+        <!-- Go Back Button -->
+        <button onclick="location.href='{{ url_for('seat_map', event_id=event.id) }}'">Go Back</button>
+    </main>
+</body>
+</html>
+
+
+
+

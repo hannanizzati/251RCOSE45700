@@ -1,0 +1,135 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    <title>TickeTime</title>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="overlay" id="overlay"></div>
+    <div class="sidebar" id="sidebar">
+        <img src="https://via.placeholder.com/80" alt="Profile Picture">
+        <h3>HANNAN IZZATI</h3>
+        <p>nanizz@gmail.com</p>
+        <a href="{{ url_for('my_reservations') }}">My Reservations</a> <!-- New link -->
+        <a href="#">Tickets</a>
+        <a href="#">Offers</a>
+        <a href="#">Preferences</a>
+        <a href="#">Accounts & Settings</a>
+        <a href="#">Sign Out</a>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <h1 class="main-title">TickeTime</h1>
+        <div class="search-bar">
+            <input type="text" id="search-keyword" placeholder="Search event or keyword">
+            <select id="location-filter">
+                <option value="">Select Location</option>
+                <option value="Seoul">Seoul</option>
+                <option value="Busan">Busan</option>
+            </select>
+            <input type="date" id="date-filter">
+            <button id="search-btn">Search</button>
+        </div>
+        
+        <div class="menu">
+            <button onclick="toggleSidebar()">☰</button>
+            <img src="https://via.placeholder.com/40" alt="Profile">
+        </div>
+    </header>
+
+    <!-- Recommended Section -->
+    <div class="recommended-section">
+        <h2>RECOMMENDED FOR YOU</h2>
+        <div class="slideshow-container">
+            {% for event in recommended_events %}
+            <div class="mySlides fade">
+                <img src="{{ url_for('static', filename='images/' + event.id|string + '.jpg') }}" alt="{{ event.name }}" style="width:100%">
+                <div class="text">{{ event.name }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        <br>
+        <!-- Slideshow controls -->
+        <div class="dot-container">
+            {% for i in range(recommended_events|length) %}
+            <span class="dot" onclick="currentSlide({{ i+1 }})"></span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Genre Section -->
+    <div class="container">
+        <div class="genre-section">
+            <h2>EVENTS BY GENRE</h2>
+            <div class="genre-grid">
+                <div class="genre" onclick="window.location.href='/genre/pop'">POP</div>
+                <div class="genre" onclick="window.location.href='/genre/musical'">MUSICAL</div>
+                <div class="genre" onclick="window.location.href='/genre/soul'">SOUL</div>
+                <div class="genre" onclick="window.location.href='/genre/folk'">FOLK</div>
+                <div class="genre" onclick="window.location.href='/genre/disco'">DISCO</div>
+                <div class="genre" onclick="window.location.href='/genre/vocal'">VOCAL</div>
+            </div>
+        </div>
+
+        <!-- Events List -->
+        <h2>Nearby Events</h2>
+        <div class="event-list">
+            {% for event in events %}
+            <div class="event-card">
+                <img src="{{ url_for('static', filename='images/' + event.id|string + '.jpg') }}" alt="{{ event.name }}" style="width:100%">
+                <h3>{{ event.name }}</h3>
+                <p>Date: {{ event.date }}</p>
+                <p>Price: {{ event.price }}</p>
+                <button onclick="location.href='{{ url_for('event_details', event_id=event.id) }}'">Book</button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // Slideshow JS
+        let slideIndex = 0;
+        showSlides();
+
+        function showSlides() {
+            let slides = document.getElementsByClassName("mySlides");
+            let dots = document.getElementsByClassName("dot");
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+            slideIndex++;
+            if (slideIndex > slides.length) { slideIndex = 1 }
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].className = dots[i].className.replace(" active", "");
+            }
+            slides[slideIndex - 1].style.display = "block";
+            dots[slideIndex - 1].className += " active";
+            setTimeout(showSlides, 3000); // Change image every 3 seconds
+        }
+
+        function currentSlide(n) {
+            slideIndex = n - 1;
+            showSlides();
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

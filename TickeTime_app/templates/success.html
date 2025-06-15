@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Payment Successful</h1>
+    </header>
+    <main>
+        <p>Thank you for your payment! Your reservation has been confirmed.</p>
+        <p><strong>Event:</strong> {{ event.name }}</p>
+        <p><strong>Date:</strong> {{ event.date }}</p>
+        <p><strong>Total Amount Paid:</strong> ₩{{ total_price }}</p>
+        <p><strong>Reserved Seats:</strong> {{ ', '.join(reserved_seats) }}</p>
+        <button onclick="location.href='{{ url_for('reservations') }}'">View My Reservations</button>
+    </main>
+</body>
+</html>

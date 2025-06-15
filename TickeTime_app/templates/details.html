@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>{{ event.name }} - Details</title>
+    <script>
+        function validateBooking() {
+            const seatLimit = 4; // Maximum seats per booking
+            const seatCountInput = document.getElementById("seat-count");
+            const selectedSeats = parseInt(seatCountInput.value, 10);
+
+            // Validation for seat count
+            if (!selectedSeats || selectedSeats < 1) {
+                alert("Please select at least 1 seat to proceed.");
+                return false;
+            }
+            if (selectedSeats > seatLimit) {
+                alert(`You can book up to ${seatLimit} seats only.`);
+                return false;
+            }
+
+            // Redirect to seat map with seat count as query param
+            const seatMapUrl = "{{ url_for('seat_map', event_id=event.id) }}";
+            window.location.href = `${seatMapUrl}?seats=${selectedSeats}`;
+            return true;
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>{{ event.name }} - Details</h1>
+    </header>
+    <section>
+        <p><strong>Date:</strong> {{ event.date }}</p>
+        <p><strong>Location:</strong> {{ event.location }}</p>
+        <p><strong>Price:</strong> Starting at {{ event.price }}</p>
+        <p><strong>Description:</strong> {{ event.description or "No additional details available." }}</p>
+
+        <!-- Seat selection -->
+        <h3>Select the number of seats to book:</h3>
+        <label for="seat-count">Number of Seats:</label>
+        <input type="number" id="seat-count" min="1" max="4" value="1" required aria-label="Enter the number of seats to book">
+
+        <!-- Book Now button -->
+        <button onclick="validateBooking()">Book Now</button>
+    </section>
+
+    <!-- Go back button -->
+    <button onclick="window.location.href='/'">Go Back</button>
+</body>
+</html>
+
+
+
+
+

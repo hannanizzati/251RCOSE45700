@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reservations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        // Function to cancel a reservation
+        function cancelReservation(orderNumber) {
+            if (confirm("Are you sure you want to cancel this reservation?")) {
+                fetch(`/cancel_reservation/${orderNumber}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Reservation canceled successfully.");
+                            location.reload(); // Reload the page to update reservations
+                        } else {
+                            alert("Failed to cancel the reservation.");
+                        }
+                    });
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>My Reservations</h1>
+    {% if reservations %}
+    <table>
+        <thead>
+            <tr>
+                <th>Order Number</th>
+                <th>Event</th>
+                <th>Location</th>
+                <th>Seats</th>
+                <th>Total Price</th>
+                <th>Buyer Details</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reservation in reservations %}
+            <tr>
+                <td>{{ reservation.order_number }}</td>
+                <td>{{ reservation.event }}</td>
+                <td>{{ reservation.location }}</td>
+                <td>{{ reservation.seats | join(", ") }}</td>
+                <td>₩{{ reservation.total_price }}</td>
+                <td>
+                    Name: {{ reservation.buyer_name }}<br>
+                    Email: {{ reservation.buyer_email }}<br>
+                    Contact: {{ reservation.buyer_contact }}
+                </td>
+                <td>
+                    <button onclick="cancelReservation('{{ reservation.order_number }}')">Cancel</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No reservations yet.</p>
+    {% endif %}
+    <button onclick="location.href='{{ url_for('home') }}'">Back to Home</button>
+</body>
+</html>
+
+
+
+
+
+

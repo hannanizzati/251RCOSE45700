@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Available Events</title>
+</head>
+<body>
+    <header>
+        <h1>Available Events</h1>
+    </header>
+
+    <!-- Search Form -->
+    <form method="GET" action="{{ url_for('search_events') }}">
+        <div class="search-bar">
+            <input type="text" name="keyword" placeholder="Search event or keyword">
+            <select name="location">
+                <option value="">All Locations</option>
+                <option value="Seoul">Seoul</option>
+                <option value="Busan">Busan</option>
+            </select>
+            <input type="date" name="date">
+            <button type="submit">Search</button>
+        </div>
+    </form>
+
+    <!-- Available Events -->
+    <section>
+        {% if events %}
+        <ul class="event-list">
+            {% for event in events %}
+            <li class="event-card">
+                <!-- Dynamically construct the image path using the event's ID -->
+                <img src="{{ url_for('static', filename='images/' + event.id|string + '.jpg') }}" alt="{{ event.name }}" style="width:100%">
+                <h3>{{ event.name }}</h3>
+                <p><strong>Date:</strong> {{ event.date }}</p>
+                <p><strong>Location:</strong> {{ event.location }}</p>
+                <p><strong>Price:</strong> {{ event.price }}</p>
+                <!-- View Details button linked to the details route -->
+                <button onclick="location.href='{{ url_for('event_details', event_id=event.id) }}'">Book</button>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No events found. Please try another search.</p>
+        {% endif %}
+    </section>
+
+    <button onclick="location.href='/'">Go Back</button>
+</body>
+</html>

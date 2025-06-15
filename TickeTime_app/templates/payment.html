@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Online Payment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Secure Online Payment</h1>
+    </header>
+    <main>
+        {% if success %}
+        <!-- Payment Success Message -->
+        <p>Payment successful! Your booking has been confirmed.</p>
+        <button onclick="location.href='{{ url_for('home') }}'">Return to Home</button>
+        {% else %}
+        <!-- User Details -->
+        <h2>Buyer Details</h2>
+        <p><strong>Name:</strong> {{ buyer_name }}</p>
+        <p><strong>Email:</strong> {{ buyer_email }}</p>
+        <p><strong>Contact Number:</strong> {{ buyer_contact }}</p>
+
+        <!-- Payment Form -->
+        <form id="payment-form" method="post" action="{{ url_for('complete_purchase', event_id=event.id) }}">
+            <!-- Hidden Fields to Pass Data -->
+            <input type="hidden" name="buyer_name" value="{{ buyer_name }}">
+            <input type="hidden" name="buyer_email" value="{{ buyer_email }}">
+            <input type="hidden" name="buyer_contact" value="{{ buyer_contact }}">
+            <input type="hidden" name="seats" value="{{ seats }}">
+
+            <!-- Card Details -->
+            <label for="card-number">Card Number:</label>
+            <input type="text" id="card-number" name="card_number" placeholder="1234-5678-9012-3456" required>
+            
+            <label for="cvv">CVV:</label>
+            <input type="text" id="cvv" name="cvv" placeholder="123" required>
+            
+            <label for="expiry-date">Expiry Date:</label>
+            <input type="text" id="expiry-date" name="expiry_date" placeholder="MM/YY" required>
+            
+            <!-- Submit Button -->
+            <button type="submit">Complete Payment</button>
+        </form>
+        {% endif %}
+    </main>
+</body>
+</html>
+
+
+
+

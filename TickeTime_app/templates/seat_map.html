@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>{{ event.name }} - Seat Map</title>
+    <style>
+        /* Style for seats */
+        .seat {
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .seat.available {
+            background-color: lightgreen;
+        }
+
+        .seat.reserved {
+            background-color: grey;
+            cursor: not-allowed;
+        }
+
+        .seat.selected {
+            background-color: purple;
+            color: white;
+        }
+    </style>
+    <script>
+        let selectedSeats = []; // Array to store selected seats
+
+        // Function to display seats for a selected segment
+        function showSeats(segment) {
+            const seatContainer = document.getElementById('seats-container');
+            const seats = JSON.parse(document.getElementById(segment + '-seats').textContent);
+            seatContainer.innerHTML = ''; // Clear current seat map
+
+            // Create buttons for each seat
+            Object.entries(seats).forEach(([seat, status]) => {
+                const button = document.createElement('button');
+                button.textContent = seat;
+                button.id = seat;
+                button.className = `seat ${status}`;
+                button.disabled = status === 'reserved'; // Disable button if seat is reserved
+                button.onclick = () => toggleSeat(seat, status);
+                seatContainer.appendChild(button);
+            });
+        }
+
+        // Function to handle seat selection and deselection
+        function toggleSeat(seat, status) {
+            const seatButton = document.getElementById(seat);
+            if (seatButton.classList.contains("selected")) {
+                // Deselect seat
+                seatButton.classList.remove("selected");
+                selectedSeats = selectedSeats.filter(s => s !== seat);
+            } else if (status === "available") {
+                // Select seat if available and limit not exceeded
+                if (selectedSeats.length < {{ seats_limit }}) {
+                    seatButton.classList.add("selected");
+                    selectedSeats.push(seat);
+                } else {
+                    alert(`You can only select up to {{ seats_limit }} seats.`);
+                }
+            }
+
+            // Update displayed selected seats
+            document.getElementById("selected-seats").innerText = selectedSeats.join(", ") || "None";
+        }
+
+        // Function to confirm booking
+        function confirmBooking() {
+            if (selectedSeats.length === 0) {
+                alert("Please select at least one seat to proceed.");
+                return;
+            }
+
+            fetch(`/reserve_seats/{{ event.id }}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ seats: selectedSeats })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Seats temporarily reserved. Proceed to confirm your order.");
+                        location.href = `/confirm_order_page/{{ event.id }}?seats=${selectedSeats.join(",")}`;
+                    } else {
+                        alert("Error reserving seats.");
+                    }
+                });
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>{{ event.name }} - Select Your Seat</h1>
+    </header>
+    <main>
+        <div class="layout">
+            <!-- Left side: Stage map -->
+            <div class="stage-map">
+                <div class="stage">Stage</div>
+                {% for segment, data in event.segments.items() %}
+                <button class="segment" onclick="showSeats('{{ segment }}')">
+                    {{ segment }} ({{ data.price }})
+                </button>
+                {% endfor %}
+            </div>
+
+            <!-- Right side: Seat selection -->
+            <div class="seat-selection">
+                <h3>Available Seats</h3>
+                <div id="seats-container" class="seat-map">
+                    <p>Select a segment to view seats.</p>
+                </div>
+                <h4>Selected Seats: <span id="selected-seats">None</span></h4>
+                <button onclick="confirmBooking()">Confirm Booking</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Hidden data for seats -->
+    {% for segment, data in event.segments.items() %}
+    <script type="application/json" id="{{ segment }}-seats">{{ data.seats | tojson }}</script>
+    {% endfor %}
+
+    <!-- Go back button -->
+    <button onclick="location.href='{{ url_for('event_details', event_id=event.id) }}'">Go Back</button>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
